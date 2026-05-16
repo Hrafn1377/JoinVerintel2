@@ -1,5 +1,5 @@
 import uuid
-from sqlalchemy import Column, String, Boolean, DateTime, Float, JSON, Text
+from sqlalchemy import Column, String, Boolean, DateTime, Float, JSON, Text, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from app.db.session import Base
@@ -21,7 +21,7 @@ class Verification(Base):
     __tablename__ = "verifications"
 
     id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    user_id = Column(String, nullable=True)
+    user_id = Column(String, ForeignKey("users.id"), nullable=True)
     posting_text = Column(Text, nullable=False)
     company_name = Column(String, nullable=True)
     company_domain = Column(String, nullable=True)

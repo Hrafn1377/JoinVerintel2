@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Sign in — Verintel{% endblock %}
+
+{% block topbar_title %}Sign in{% endblock %}
+
+{% block topbar_actions %}{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">Welcome back</h1>
+            <p class="auth-subtitle">Sign in to your account.</p>
+        </div>
+
+        {% if error %}
+        <div class="auth-error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST" action="/auth/login" class="auth-form">
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="you@example.com"
+                    required
+                    autocomplete="email"
+                >
+            </div>
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Your password"
+                    required
+                    autocomplete="current-password"
+                >
+            </div>
+            <button type="submit" class="btn btn--primary btn--full">Sign in</button>
+        </form>
+
+        <p class="auth-switch">
+            Don't have an account? <a href="/auth/register">Join free</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
