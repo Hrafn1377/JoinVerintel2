@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Verintel — Verify before you apply{% endblock %}
+
+{% block topbar_title %}Home{% endblock %}
+
+{% block content %}
+<div class="home-hero">
+    <p class="home-eyebrow">Verified jobs. Real opportunities.</p>
+    <h1 class="home-headline">
+        Everything job boards promised.<br>
+        <span class="home-headline-accent">Actually delivered.</span>
+    </h1>
+    <p class="home-subhead">
+        Paste any job posting. We check it against 15+ signals — fraud language, 
+        salary sanity, business registry, domain age, phone verification and more. 
+        Free. No account needed.
+    </p>
+
+    <div class="verify-box">
+        <p class="verify-box-label">Verify a job posting</p>
+        <form action="/verify" method="POST">
+            <div class="verify-textarea-wrap">
+                <textarea
+                    name="posting_text"
+                    class="verify-textarea"
+                    rows="6"
+                    placeholder="Paste the full job posting here — title, company, salary, requirements, contact details. The more detail, the better the analysis."
+                    required
+                ></textarea>
+            </div>
+            <div class="verify-form-row">
+                <input
+                    type="text"
+                    name="company_name"
+                    placeholder="Company name (optional)"
+                    class="verify-input-sm"
+                >
+                <input
+                    type="text"
+                    name="company_domain"
+                    placeholder="Company domain (optional)"
+                    class="verify-input-sm"
+                >
+                <input
+                    type="text"
+                    name="company_phone"
+                    placeholder="Company phone (optional)"
+                    class="verify-input-sm"
+                >
+                <select name="claimed_country" class="verify-input-sm">
+                    <option value="us">United States</option>
+                    <option value="gb">United Kingdom</option>
+                    <option value="ca">Canada</option>
+                    <option value="au">Australia</option>
+                    <option value="de">Germany</option>
+                    <option value="fr">France</option>
+                    <option value="ie">Ireland</option>
+                    <option value="in">India</option>
+                    <option value="no">Norway</option>
+                    <option value="ph">Philippines</option>
+                </select>
+            </div>
+            <div class="verify-form-footer">
+                <p class="verify-note">No account required. Results in seconds.</p>
+                <button type="submit" class="btn btn--primary btn--lg">Verify now →</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="trust-row">
+        <div class="trust-item">
+            <span class="trust-dot"></span>
+            <span class="trust-text">15+ verification signals</span>
+        </div>
+        <div class="trust-item">
+            <span class="trust-dot"></span>
+            <span class="trust-text">Real-time results</span>
+        </div>
+        <div class="trust-item">
+            <span class="trust-dot"></span>
+            <span class="trust-text">Always free to verify</span>
+        </div>
+    </div>
+</div>
+{% endblock %}

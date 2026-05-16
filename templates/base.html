@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Verintel — Verify before you apply{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Verify any job posting in seconds. Free, no account needed. Verintel checks 15+ signals to spot fake jobs before you apply.{% endblock %}">
+    {% block robots %}<meta name="robots" content="index, follow">{% endblock %}
+    <link rel="stylesheet" href="/static/css/main.css">
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="app-shell">
+
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-logo">
+                <a href="/">
+                    <img src="/static/images/greyscale-watermark.png" alt="Verintel" class="logo-img">
+                </a>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="/verify" class="sidebar-item {% if active == 'verify' %}sidebar-item--active{% endif %}">
+                    <svg class="sidebar-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10 2L3 5v5c0 4 3 7 7 8 4-1 7-4 7-8V5l-7-3z" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M7 10l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span class="sidebar-label">Verify</span>
+                </a>
+
+                {% if user %}
+                <a href="/history" class="sidebar-item {% if active == 'history' %}sidebar-item--active{% endif %}">
+                    <svg class="sidebar-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M10 6v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span class="sidebar-label">History</span>
+                </a>
+                {% endif %}
+            </nav>
+
+            <div class="sidebar-footer">
+                {% if user %}
+                <a href="/account" class="sidebar-item {% if active == 'account' %}sidebar-item--active{% endif %}">
+                    <div class="sidebar-avatar">
+                        {{ user.email[0].upper() }}
+                    </div>
+                    <span class="sidebar-label">Account</span>
+                </a>
+                <form method="POST" action="/auth/logout">
+                    <button type="submit" class="sidebar-item sidebar-item--logout">
+                        <svg class="sidebar-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 10H3m0 0l3-3m-3 3l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                            <path d="M9 5H15a2 2 0 012 2v6a2 2 0 01-2 2H9" stroke="currentColor" stroke-width="1.5"/>
+                        </svg>
+                        <span class="sidebar-label">Sign out</span>
+                    </button>
+                </form>
+                {% else %}
+                <a href="/auth/login" class="sidebar-item">
+                    <svg class="sidebar-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 10h11M10 6l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                    <span class="sidebar-label">Sign in</span>
+                </a>
+                {% endif %}
+            </div>
+        </aside>
+
+        <div class="main-wrap">
+            <header class="topbar">
+                <div class="topbar-left">
+                    <span class="topbar-title">{% block topbar_title %}{% endblock %}</span>
+                </div>
+                <div class="topbar-right">
+                    {% block topbar_actions %}
+                    {% if not user %}
+                    <a href="/auth/login" class="btn btn--ghost">Sign in</a>
+                    <a href="/auth/register" class="btn btn--primary">Join free</a>
+                    {% endif %}
+                    {% endblock %}
+                </div>
+            </header>
+
+            <main class="main-content">
+                {% block content %}{% endblock %}
+            </main>
+
+            <footer class="footer">
+                <ul class="footer-links">
+                    <li><a href="/about">About</a></li>
+                    <li><a href="/help">Help</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/terms">Terms of Service</a></li>
+                </ul>
+                <p class="footer-copy">Verintel — Verify before you apply</p>
+            </footer>
+        </div>
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
