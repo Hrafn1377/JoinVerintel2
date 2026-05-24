@@ -5,6 +5,7 @@ from app.db.session import Base, engine
 from app.db.models import User, Verification
 from app.auth.dependencies import get_optional_user
 from app.routers.auth import router as auth_router
+from app.routers.verify import router as verify_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -14,6 +15,7 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 app.include_router(auth_router)
+app.include_router(verify_router)
 
 
 @app.get("/")

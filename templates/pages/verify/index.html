@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Verify a job posting — Verintel{% endblock %}
+
+{% block topbar_title %}Verify{% endblock %}
+
+{% block topbar_actions %}{% endblock %}
+
+{% block content %}
+<div class="verify-page">
+    <div class="verify-intro">
+        <h1 class="verify-title">Verify before you apply.</h1>
+        <p class="verify-subtitle">
+            Paste the full job posting below. We check it against 15+ signals —
+            fraud language, salary sanity, business registry, domain age, and more.
+            Free. No account needed.
+        </p>
+    </div>
+
+    <div class="verify-form-card">
+        <form method="POST" action="/verify/">
+            <div class="form-group">
+                <label for="posting_text" class="form-label">Job posting text</label>
+                <textarea
+                    id="posting_text"
+                    name="posting_text"
+                    class="verify-input"
+                    rows="12"
+                    placeholder="Paste the full job posting here — title, company, salary, requirements, contact details. The more detail, the better the analysis."
+                    required
+                ></textarea>
+                <p class="form-hint">
+                    Copy the entire posting from wherever you found it — Indeed, LinkedIn,
+                    a company website, an email. The more text you include, the more
+                    accurate the results.
+                </p>
+            </div>
+
+            <div class="verify-optional-fields">
+                <p class="verify-optional-label">Optional — add these to enable more checks</p>
+                <div class="verify-optional-grid">
+                    <div class="form-group">
+                        <label for="company_name" class="form-label">Company name</label>
+                        <input type="text" id="company_name" name="company_name" placeholder="e.g. Acme Corp">
+                    </div>
+                    <div class="form-group">
+                        <label for="company_domain" class="form-label">Company domain</label>
+                        <input type="text" id="company_domain" name="company_domain" placeholder="e.g. acmecorp.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="company_phone" class="form-label">Company phone</label>
+                        <input type="text" id="company_phone" name="company_phone" placeholder="e.g. +1 555 123 4567">
+                    </div>
+                    <div class="form-group">
+                        <label for="claimed_country" class="form-label">Company claims to be in</label>
+                        <select id="claimed_country" name="claimed_country">
+                            <option value="us">United States</option>
+                            <option value="gb">United Kingdom</option>
+                            <option value="ca">Canada</option>
+                            <option value="au">Australia</option>
+                            <option value="de">Germany</option>
+                            <option value="fr">France</option>
+                            <option value="ie">Ireland</option>
+                            <option value="in">India</option>
+                            <option value="no">Norway</option>
+                            <option value="ph">Philippines</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="verify-form-actions">
+                <button type="submit" class="btn btn--primary btn--lg">Verify now →</button>
+                <p class="verify-form-note">Results in seconds. No account required.</p>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
