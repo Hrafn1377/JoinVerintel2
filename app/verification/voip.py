@@ -6,11 +6,6 @@ from app.scoring.models import Signal, Verdict
 async def check_voip(phone: str) -> Signal:
     """
     Checks if a phone number is a VOIP or virtual number.
-    Scammers commonly use VOIP numbers to appear local while
-    operating from another country entirely.
-    
-    Uses the APILayer Number Verification API.
-    Free tier: 100 requests per month.
     """
     api_key = os.getenv("APILAYER_KEY")
 
@@ -40,14 +35,14 @@ async def check_voip(phone: str) -> Signal:
                     verdict=Verdict.WARN,
                     score=0.5,
                     weight=0.4,
-                    reason="VOIP detection check could not be completed. Manual review recommended.",
+                    reason="VOIP check couldn't be completed. Manual review recommended.",
                     source="APILayer"
                 )
 
             data = response.json()
             valid = data.get("valid", False)
             line_type = data.get("line_type", "").lower()
-            carrier = data.get("carrier", "Unknown")
+            carrier_name = data.get("carrier", "Unknown")
 
             if not valid:
                 return Signal(
@@ -55,7 +50,7 @@ async def check_voip(phone: str) -> Signal:
                     verdict=Verdict.WARN,
                     score=0.4,
                     weight=0.4,
-                    reason="Phone number could not be validated by VOIP detection service.",
+                    reason="Phone number couldn't be validated.",
                     source="APILayer"
                 )
 
@@ -65,7 +60,7 @@ async def check_voip(phone: str) -> Signal:
                     verdict=Verdict.FAIL,
                     score=0.0,
                     weight=0.4,
-                    reason=f"Phone number is a VOIP or virtual number (carrier: {carrier}). Scammers commonly use virtual numbers to appear local while operating overseas.",
+                    reason=f"This is a VOIP or virtual number (carrier: {carrier_name}). Scammers use virtual numbers to appear local while operating overseas.",
                     source="APILayer"
                 )
 
@@ -74,7 +69,7 @@ async def check_voip(phone: str) -> Signal:
                 verdict=Verdict.PASS,
                 score=1.0,
                 weight=0.4,
-                reason=f"Phone number is a legitimate {line_type} line (carrier: {carrier}).",
+                reason=f"Legitimate {line_type} number (carrier: {carrier_name}).",
                 source="APILayer"
             )
 
@@ -84,6 +79,6 @@ async def check_voip(phone: str) -> Signal:
             verdict=Verdict.WARN,
             score=0.5,
             weight=0.4,
-            reason="VOIP detection check could not be completed. Manual review recommended.",
+            reason="VOIP check couldn't be completed. Manual review recommended.",
             source="APILayer"
         )

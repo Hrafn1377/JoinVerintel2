@@ -46,7 +46,7 @@ async def check_domain_age(domain: str) -> Signal:
                 verdict=Verdict.FAIL,
                 score=0.0,
                 weight=0.4,
-                reason=f"Domain {domain} was registered only {age_days} days ago. Newly registered domains are a strong indicator of fraud.",
+                reason=f"{domain} was registered {age_days} days ago. Newly registered domains are a red flag.",
                 source="WHOIS"
             )
 
@@ -56,7 +56,7 @@ async def check_domain_age(domain: str) -> Signal:
                 verdict=Verdict.WARN,
                 score=0.3,
                 weight=0.4,
-                reason=f"Domain {domain} is less than one year old ({age_days} days). Proceed with caution.",
+                reason=f"{domain} is less than a year old ({age_days} days). Proceed with caution.",
                 source="WHOIS"
             )
 
@@ -75,6 +75,6 @@ async def check_domain_age(domain: str) -> Signal:
             verdict=Verdict.WARN,
             score=0.4,
             weight=0.4,
-            reason=f"Could not retrieve domain registration data for {domain}. Manual verification recommended.",
+            reason=f"Domain check couldn't be completed for {domain}. Manual verification recommended.",
             source="WHOIS"
         )

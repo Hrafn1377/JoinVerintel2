@@ -151,7 +151,7 @@ FOREIGN_SALARY_AS_USD = [
         "country": "Ghana",
         "min": 4000,
         "max": 12000,
-        "note": "Ghanaian cedi annual salaries commonly range ₵50k-500k, approximately $4k-12k UDS"
+        "note": "Ghanaian cedi annual salaries approximately $4k-12k USD"
     },
 ]
 
@@ -161,12 +161,7 @@ FOREIGN_SALARY_AS_USD = [
 # ============================================
 
 def check_fraud_language(text: str) -> Signal:
-    """
-    Checks for fraud phrases using a tiered system.
-    Tier 1 = immediate fail. Tier 2 = fail on two hits, warn on one.
-    """
     text_lower = text.lower()
-
     tier1_found = [p for p in TIER_1_FRAUD if p in text_lower]
     tier2_found = [p for p in TIER_2_FRAUD if p in text_lower]
 
@@ -176,7 +171,7 @@ def check_fraud_language(text: str) -> Signal:
             verdict=Verdict.FAIL,
             score=0.0,
             weight=0.8,
-            reason=f"High-confidence fraud language detected: '{tier1_found[0]}'. This phrase is almost exclusively used in scams and MLM schemes.",
+            reason=f"'{tier1_found[0]}' — this phrase belongs in scam postings and MLM pitches. Not legitimate job postings.",
             source="NLP"
         )
 
@@ -186,7 +181,7 @@ def check_fraud_language(text: str) -> Signal:
             verdict=Verdict.FAIL,
             score=0.0,
             weight=0.8,
-            reason=f"Multiple suspicious phrases detected: {', '.join(tier2_found[:2])}. This combination is a strong indicator of a fraudulent posting.",
+            reason=f"Multiple red flag phrases found: {', '.join(tier2_found[:2])}. This combination is a strong indicator of fraud.",
             source="NLP"
         )
 
@@ -196,7 +191,7 @@ def check_fraud_language(text: str) -> Signal:
             verdict=Verdict.WARN,
             score=0.3,
             weight=0.8,
-            reason=f"Suspicious phrase detected: '{tier2_found[0]}'. This language is sometimes used in misleading job postings.",
+            reason=f"Found a phrase worth noting: '{tier2_found[0]}'. Not conclusive on its own, but worth keeping in mind.",
             source="NLP"
         )
 
@@ -205,16 +200,12 @@ def check_fraud_language(text: str) -> Signal:
         verdict=Verdict.PASS,
         score=1.0,
         weight=0.8,
-        reason="No fraud language detected.",
+        reason="No scam language found.",
         source="NLP"
     )
 
 
 def check_urgency(text: str) -> Signal:
-    """
-    Checks for urgency pressure tactics.
-    Legitimate employers don't need to pressure candidates.
-    """
     text_lower = text.lower()
     found = [phrase for phrase in URGENCY_PHRASES if phrase in text_lower]
 
@@ -224,7 +215,7 @@ def check_urgency(text: str) -> Signal:
             verdict=Verdict.PASS,
             score=1.0,
             weight=0.3,
-            reason="No urgency pressure tactics detected.",
+            reason="No pressure tactics found.",
             source="NLP"
         )
 
@@ -233,17 +224,12 @@ def check_urgency(text: str) -> Signal:
         verdict=Verdict.WARN,
         score=0.4,
         weight=0.3,
-        reason=f"Urgency language detected: '{found[0]}'. Legitimate employers rarely pressure candidates to apply immediately.",
+        reason=f"'{found[0]}' — legitimate employers don't pressure candidates. This is a warning sign.",
         source="NLP"
     )
 
 
 def check_personal_info_requests(text: str) -> Signal:
-    """
-    Checks if the posting asks for sensitive personal information.
-    No legitimate employer asks for SSN, bank details, or passport
-    numbers in a job posting.
-    """
     text_lower = text.lower()
     found = [p for p in PERSONAL_INFO_REQUESTS if p in text_lower]
 
@@ -253,7 +239,7 @@ def check_personal_info_requests(text: str) -> Signal:
             verdict=Verdict.PASS,
             score=1.0,
             weight=0.9,
-            reason="No requests for sensitive personal information detected.",
+            reason="No requests for personal or financial information found.",
             source="NLP"
         )
 
@@ -262,7 +248,7 @@ def check_personal_info_requests(text: str) -> Signal:
         verdict=Verdict.FAIL,
         score=0.0,
         weight=0.9,
-        reason=f"This posting requests sensitive personal information: '{found[0]}'. No legitimate employer asks for this in a job posting.",
+        reason=f"This posting asks for '{found[0]}'. No legitimate employer needs this at the application stage.",
         source="NLP"
     )
 
@@ -272,14 +258,7 @@ def check_personal_info_requests(text: str) -> Signal:
 # ============================================
 
 def extract_salary_figures(text: str) -> List[float]:
-    """
-    Extracts salary figures from text.
-    Handles formats like: $50,000 $50k $50,000/year $25/hour
-    Returns a list of annualized figures.
-    """
     figures = []
-
-    # Match full dollar amounts including comma-separated thousands
     dollar_pattern = r'\$\s*(\d{1,3}(?:,\d{3})+|\d{5,})([kK])?'
     matches = re.finditer(dollar_pattern, text)
 
@@ -290,15 +269,10 @@ def extract_salary_figures(text: str) -> List[float]:
             amount = float(number_str)
             if multiplier and multiplier.lower() == "k":
                 amount *= 1000
-
-            # If it looks like an hourly rate (under $500), annualize it
             if amount < 500:
                 amount *= 2080
-
-            # If it looks like a monthly rate (between $1000 and $15000)
             elif 1000 <= amount <= 15000:
                 amount *= 12
-
             figures.append(amount)
         except ValueError:
             continue
@@ -307,9 +281,6 @@ def extract_salary_figures(text: str) -> List[float]:
 
 
 def check_salary_sanity(text: str) -> Signal:
-    """
-    Checks if salary figures make sense for the type of role.
-    """
     figures = extract_salary_figures(text)
     text_lower = text.lower()
 
@@ -319,7 +290,7 @@ def check_salary_sanity(text: str) -> Signal:
             verdict=Verdict.WARN,
             score=0.5,
             weight=0.4,
-            reason="No salary figures found. Legitimate employers are transparent about compensation.",
+            reason="No salary listed. Legitimate employers are upfront about pay.",
             source="NLP"
         )
 
@@ -332,7 +303,7 @@ def check_salary_sanity(text: str) -> Signal:
                         verdict=Verdict.FAIL,
                         score=0.0,
                         weight=0.7,
-                        reason=f"Salary of ${figure:,.0f} is unrealistically high for a {role} role. This is a common scam tactic to attract applicants.",
+                        reason=f"${figure:,.0f} is unrealistically high for a {role} role. A common tactic used to attract applicants to fake postings.",
                         source="NLP"
                     )
                 if figure < min_sal * 0.5:
@@ -341,7 +312,7 @@ def check_salary_sanity(text: str) -> Signal:
                         verdict=Verdict.WARN,
                         score=0.3,
                         weight=0.4,
-                        reason=f"Salary of ${figure:,.0f} appears unusually low for a {role} role.",
+                        reason=f"${figure:,.0f} is unusually low for a {role} role.",
                         source="NLP"
                     )
 
@@ -350,18 +321,13 @@ def check_salary_sanity(text: str) -> Signal:
         verdict=Verdict.PASS,
         score=1.0,
         weight=0.4,
-        reason="Salary figures appear reasonable.",
+        reason="Salary looks reasonable for the role.",
         source="NLP"
     )
 
 
 def check_currency_conversion(text: str) -> Signal:
-    """
-    Detects salary figures that look like foreign currency amounts
-    presented as USD.
-    """
     figures = extract_salary_figures(text)
-    print(f"DEBUG salary figures: {figures}")
 
     if not figures:
         return Signal(
@@ -369,7 +335,7 @@ def check_currency_conversion(text: str) -> Signal:
             verdict=Verdict.PASS,
             score=1.0,
             weight=0.6,
-            reason="No salary figures to check for currency conversion.",
+            reason="No salary figures to check.",
             source="NLP"
         )
 
@@ -381,7 +347,7 @@ def check_currency_conversion(text: str) -> Signal:
                     verdict=Verdict.FAIL,
                     score=0.0,
                     weight=0.6,
-                    reason=f"Salary of ${figure:,.0f} falls within the range of typical {currency['country']} salaries in {currency['currency']}. This is a common scam pattern where foreign salaries are presented with a dollar sign to appear as US compensation.",
+                    reason=f"${figure:,.0f} matches the range of a typical {currency['country']} salary in {currency['currency']}. This is a known scam pattern — foreign salaries presented as US dollars.",
                     source="NLP"
                 )
 
@@ -390,16 +356,12 @@ def check_currency_conversion(text: str) -> Signal:
         verdict=Verdict.PASS,
         score=1.0,
         weight=0.6,
-        reason="Salary figures do not match known foreign currency conversion patterns.",
+        reason="Salary doesn't match any known foreign currency conversion patterns.",
         source="NLP"
     )
 
 
 def run_nlp_checks(text: str) -> List[Signal]:
-    """
-    Runs all NLP checks on the posting text.
-    Returns a list of signals.
-    """
     return [
         check_fraud_language(text),
         check_urgency(text),
@@ -414,18 +376,10 @@ def run_nlp_checks(text: str) -> List[Signal]:
 # ============================================
 
 def detect_fraud_patterns(report: VerificationReport) -> VerificationReport:
-    """
-    Looks at all signals together and fires a fraud pattern signal
-    when multiple red flags are present in combination.
-    
-    This is the final verdict layer — individual checks catch specific
-    issues, this catches the overall pattern.
-    """
     signals_by_label = {s.label: s for s in report.signals}
 
     fraud_indicators = []
 
-    # Check each signal for failures
     salary_sanity = signals_by_label.get("Salary sanity")
     currency_conversion = signals_by_label.get("Currency conversion")
     phone_country = signals_by_label.get("Phone country")
@@ -437,36 +391,28 @@ def detect_fraud_patterns(report: VerificationReport) -> VerificationReport:
 
     if salary_sanity and salary_sanity.verdict == Verdict.FAIL:
         fraud_indicators.append("unrealistic salary")
-
     if currency_conversion and currency_conversion.verdict == Verdict.FAIL:
         fraud_indicators.append("salary matches foreign currency conversion")
-
     if phone_country and phone_country.verdict == Verdict.FAIL:
         fraud_indicators.append("phone number country mismatch")
-
     if voip and voip.verdict == Verdict.FAIL:
         fraud_indicators.append("VOIP or virtual phone number")
-
     if business_registry and business_registry.verdict == Verdict.FAIL:
         fraud_indicators.append("not found in business registry")
-
     if domain_age and domain_age.verdict == Verdict.FAIL:
         fraud_indicators.append("newly registered domain")
-
     if fraud_language and fraud_language.verdict == Verdict.FAIL:
         fraud_indicators.append("high-confidence fraud language")
-
     if personal_info and personal_info.verdict == Verdict.FAIL:
         fraud_indicators.append("requests for sensitive personal information")
 
-    # Fire fraud pattern signal based on number of indicators
     if len(fraud_indicators) >= 3:
         report.signals.append(Signal(
             label="Fraud pattern detected",
             verdict=Verdict.FAIL,
             score=0.0,
             weight=1.0,
-            reason=f"This posting shows multiple characteristics consistent with fraud: {', '.join(fraud_indicators)}. We strongly recommend not applying to this role.",
+            reason=f"Multiple fraud indicators found: {', '.join(fraud_indicators)}. Do not apply to this role.",
             source="Fraud detection"
         ))
     elif len(fraud_indicators) == 2:
@@ -475,11 +421,12 @@ def detect_fraud_patterns(report: VerificationReport) -> VerificationReport:
             verdict=Verdict.WARN,
             score=0.1,
             weight=0.6,
-            reason=f"This posting shows warning signs associated with fraudulent listings: {', '.join(fraud_indicators)}. Proceed with caution and research this company independently.",
+            reason=f"Two warning signs found: {', '.join(fraud_indicators)}. Research this company independently before applying.",
             source="Fraud detection"
         ))
 
     return report
+
 
 async def verify_posting(
     posting_text: str,
