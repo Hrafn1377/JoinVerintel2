@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block title %}Verifying — Verintel{% endblock %}
+
+{% block topbar_title %}Verifying...{% endblock %}
+
+{% block topbar_actions %}
+<a href="/verify/" class="btn btn--ghost">Start over</a>
+{% endblock %}
+
+{% block head %}
+<script src="https://unpkg.com/htmx.org@1.9.12"></script>
+{% endblock %}
+
+{% block content %}
+<div class="results-page">
+
+    <div id="score-card">
+        <div class="results-score-card">
+            <div class="results-score-wrap">
+                <span class="results-score-number score--pending">—</span>
+                <div class="results-score-info">
+                    <p class="results-score-label">Checking...</p>
+                    <p class="results-score-sub">Running verification</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-board">
+        <h2 class="results-signals-title">Verification checks</h2>
+        <div class="status-board-list">
+            <div id="status-fraud-language" class="status-row status-row--waiting">
+                <span class="status-light"></span>
+                <span class="status-name">Fraud language</span>
+                <span class="status-state">Waiting</span>
+            </div>
+            <div id="status-urgency-pressure" class="status-row status-row--waiting">
+                <span class="status-light"></span>
+                <span class="status-name">Urgency pressure</span>
+                <span class="status-state">Waiting</span>
+            </div>
+            <div id="status-personal-info" class="status-row status-row--waiting">
+                <span class="status-light"></span>
+                <span class="status-name">Personal info requests</span>
+                <span class="status-state">Waiting</span>
+            </div>
+            <div id="status-salary-sanity" class="status-row status-row--waiting">
+                <span class="status-light"></span>
+                <span class="status-name">Salary sanity</span>
+                <span class="status-state">Waiting</span>
+            </div>
+            <div id="status-currency-conversion" class="status-row status-row--waiting">
+                <span class="status-light"></span>
+                <span class="status-name">Currency conversion</span>
+                <span class="status-state">Waiting</span>
+            </div>
+            {% if company_domain %}
+            <div id="status-domain-age" class="status-row status-row--waiting">
+                <span class="status-light"></span>
+                <span class="status-name">Domain age</span>
+                <span class="status-state">Waiting</span>
+            </div>
+            {% endif %}
+            {% if company_name %}
+            <div id="status-business-registry" class="status-row status-row--waiting">
+                <span class="status-light"></span>
+                <span class="status-name">Business registry</span>
+                <span class="status-state">Waiting</span>
+            </div>
+            {% endif %}
+            {% if company_phone %}
+            <div id="status-phone-country" class="status-row status-row--waiting">
+                <span class="status-light"></span>
+                <span class="status-name">Phone country</span>
+                <span class="status-state">Waiting</span>
+            </div>
+            <div id="status-voip" class="status-row status-row--waiting">
+                <span class="status-light"></span>
+                <span class="status-name">VOIP detection</span>
+                <span class="status-state">Waiting</span>
+            </div>
+            {% endif %}
+            <div id="status-fraud-pattern" class="status-row status-row--waiting">
+                <span class="status-light"></span>
+                <span class="status-name">Fraud pattern analysis</span>
+                <span class="status-state">Waiting</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="results-signals" style="margin-top: var(--space-5);">
+        <h2 class="results-signals-title">Signal details</h2>
+        <form
+            hx-post="/verify-stream/"
+            hx-trigger="load"
+            hx-target="#signals-container"
+            hx-swap="beforeend"
+        >
+            <input type="hidden" name="posting_text" value="{{ posting_text }}">
+            <input type="hidden" name="company_name" value="{{ company_name or '' }}">
+            <input type="hidden" name="company_domain" value="{{ company_domain or '' }}">
+            <input type="hidden" name="company_phone" value="{{ company_phone or '' }}">
+            <input type="hidden" name="claimed_country" value="{{ claimed_country }}">
+        </form>
+        <div id="signals-container"></div>
+    </div>
+
+    <div id="verify-actions" class="results-actions"></div>
+
+</div>
+{% endblock %}

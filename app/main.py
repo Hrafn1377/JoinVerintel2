@@ -6,6 +6,8 @@ from app.db.models import User, Verification
 from app.auth.dependencies import get_optional_user
 from app.routers.auth import router as auth_router
 from app.routers.verify import router as verify_router
+from app.routers.verify_stream import router as verify_stream_router
+from app.routers.api import router as api_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -16,6 +18,8 @@ templates = Jinja2Templates(directory="templates")
 
 app.include_router(auth_router)
 app.include_router(verify_router)
+app.include_router(verify_stream_router)
+app.include_router(api_router)
 
 
 @app.get("/")

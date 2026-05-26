@@ -28,7 +28,6 @@ async def verify_page(
 @router.post("/")
 async def verify_submit(
     request: Request,
-    db: Session = Depends(get_db),
     current_user=Depends(get_optional_user),
     posting_text: str = Form(...),
     company_name: Optional[str] = Form(None),
@@ -36,13 +35,20 @@ async def verify_submit(
     company_phone: Optional[str] = Form(None),
     claimed_country: str = Form("us"),
 ):
-    report = await verify_posting(
-        posting_text,
-        company_name=company_name,
-        company_domain=company_domain,
-        company_phone=company_phone,
-        claimed_country=claimed_country,
+    return templates.TemplateResponse(
+        request=request,
+        name="pages/verify/stream.html",
+        context={
+            "user": current_user,
+            "active": "verify",
+            "posting_text": posting_text,
+            "company_name": company_name,
+            "company_domain": company_domain,
+            "company_phone": company_phone,
+            "claimed_country": claimed_country,
+        }
     )
+
 
     # Save to history if user is logged in
     if current_user:

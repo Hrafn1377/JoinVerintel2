@@ -845,3 +845,207 @@ input::placeholder, textarea::placeholder {
   gap: var(--space-2);
   flex-wrap: wrap;
 }
+
+/* ==========================================
+   PROGRESS INDICATOR
+========================================== */
+
+.progress-indicator {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--space-4);
+}
+
+.progress-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-text-dim);
+  flex-shrink: 0;
+}
+
+.progress-indicator--active .progress-dot {
+  background: var(--color-accent);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.progress-indicator--done .progress-dot {
+  background: var(--color-pass);
+}
+
+.progress-message {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.progress-indicator--active .progress-message {
+  color: var(--color-text);
+}
+
+.progress-indicator--done .progress-message {
+  color: var(--color-pass);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* ===================================
+   SIGNAL CARD ANIMATION
+=================================== */
+
+.signal-card--animate {
+  animation: slideIn 0.2s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ================================
+   SCORE PENDING STATE
+================================ */
+
+.score-pending {
+  color: var(--color-text-dim);
+}
+
+/* ==================================
+   RESULTS ACTIONS
+================================== */
+
+.results-actions--visible {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding-top: var(--space-4);
+  border-top: 0.5px solid var(--color-border);
+  margin-top: var(--space-4);
+}
+
+/* ======================================
+   STATUS BOARD
+====================================== */
+
+.status-board {
+  margin-bottom: var(--space-5);
+}
+
+.status-board-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  border: 0.5px solid var(--color-border);
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.status-light {
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-full);
+  background: var(--color-text-dim);
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.status-name {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+.status-state {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Running state */
+.status-row--running .status-light {
+  background: var(--color-accent);
+  animation: pulse 0.8s ease-in-out infinite;
+}
+
+.status-row--running .status-name {
+  color: var(--color-text);
+}
+
+.status-row--running .status-state {
+  color: var(--color-accent);
+}
+
+/* Pass state */
+.status-row--pass {
+  border-color: var(--color-pass);
+}
+
+.status-row--pass .status-light {
+  background: var(--color-pass);
+}
+
+.status-row--pass .status-name {
+  color: var(--color-text);
+}
+
+.status-row--pass .status-state {
+  color: var(--color-pass);
+}
+
+/* Warn state */
+.status-row--warn {
+  border-color: var(--color-warn);
+}
+
+.status-row--warn .status-light {
+  background: var(--color-warn);
+}
+
+.status-row--warn .status-name {
+  color: var(--color-text);
+}
+
+.status-row--warn .status-state {
+  color: var(--color-warn);
+}
+
+/* Fail state */
+.status-row--fail {
+  border-color: var(--color-fail);
+  background: var(--color-surface-2);
+}
+
+.status-row--fail .status-light {
+  background: var(--color-fail);
+}
+
+.status-row--fail .status-name {
+  color: var(--color-text);
+}
+
+.status-row--fail .status-state {
+  color: var(--color-fail);
+}
